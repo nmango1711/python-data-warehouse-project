@@ -1,5 +1,4 @@
-import os
-from transform.silver.base_silver import read_bronze, write_silver 
+from src.transform.silver.base_silver import read_bronze, write_silver 
 from pyspark.sql.functions import *
 from pyspark.sql.window import Window
 
@@ -29,5 +28,8 @@ def transform_cust_info_to_silver(bronze_path, silver_path):
         .withColumn("cleaned_date", current_timestamp())
     )
 
+    print("**************************")
     print(f"Cleaned file: cust_info")
+    print(f"Total Rows: {df.count()}")
+    print("**************************")
     write_silver(df, "cust_info", silver_path)

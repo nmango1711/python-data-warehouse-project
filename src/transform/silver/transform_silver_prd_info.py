@@ -21,11 +21,14 @@ def transform_prd_info_to_silver(bronze_path, silver_path):
             .when(upper(trim(col("prd_line"))) == "T", "Touring")
             .otherwise("n/a")
         )
-        .withColumn("prd_start_dt",
-            date_sub(lead("prd_start_dt").over(
-            Window.partitionBy("cst_id").orderBy(col("cst_create_date").desc())
-            ), 1)
+        .withColumn("prd_end_dt",
+            to_date(        
+                date_sub(lead("prd_start_dt").over(
+                Window.partitionBy("prd_key").orderBy(col("prd_start_dt"))
+                ), 1)
+            )
         )
+        .withColumn("cleaned_date", current_timestamp())
     )
 
     print("**************************")

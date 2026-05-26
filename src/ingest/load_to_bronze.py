@@ -1,4 +1,4 @@
-from config.spark_session import get_spark
+from src.config.spark_session import get_spark
 import os 
 
 def ingest_csv_to_bronze(input_path, output_path):
