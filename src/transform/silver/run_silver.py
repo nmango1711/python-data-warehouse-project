@@ -4,7 +4,7 @@ from src.transform.silver.transform_silver_sales_details import transform_sales_
 from src.transform.silver.transform_silver_cust_az12 import transform_cust_az12_to_silver
 from src.transform.silver.transform_silver_loc_a101 import transform_loc_a101_to_silver
 from src.transform.silver.transform_silver_px_cat_g1v2 import transform_px_cat_g1v2_to_silver
-SOURCE_PATH = "data/source"
+
 BRONZE_PATH = "data/bronze"
 SILVER_PATH = "data/silver"
 
