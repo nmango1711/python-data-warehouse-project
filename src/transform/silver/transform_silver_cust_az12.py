@@ -7,48 +7,28 @@ def transform_cust_az12_to_silver(bronze_path, silver_path):
     df = (
         read_bronze("CUST_AZ12", bronze_path)
 
-        .withColumn("sls_order_dt",
+        .withColumn("cid",
             when(
-                (length(col("sls_order_dt").cast("string")) != 8) | 
-                (col("sls_order_dt").isNull()) | 
-                (col("sls_order_dt").cast("int") == 0),
+                col("cid").startswith("NAS"), 
+                substring(col("cid"), 4, length(col("cid")) - 3))
+            .otherwise(col("cid")
+            )
+        )
+        .withColumn("bdate",
+            when(
+                col("bdate") > current_date(),
                 lit(None))
-            .otherwise(to_date(col("sls_order_dt"), "yyyyMMdd")
+            .otherwise(col("bdate")
             )
         )
-        .withColumn("sls_ship_dt",
+        .withColumn("gen",
             when(
-                (length(col("sls_ship_dt").cast("string")) != 8) | 
-                (col("sls_ship_dt").isNull()) | 
-                (col("sls_ship_dt").cast("int") == 0),
-                lit(None))
-            .otherwise(to_date(col("sls_ship_dt"), "yyyyMMdd")
-            )
-        )
-        .withColumn("sls_due_dt",
-            when(
-                (length(col("sls_due_dt").cast("string")) != 8) | 
-                (col("sls_due_dt").isNull()) | 
-                (col("sls_due_dt").cast("int") == 0),
-                lit(None))
-            .otherwise(to_date(col("sls_due_dt"), "yyyyMMdd")
-            )
-        )
-        .withColumn("sls_sales",
-            when(
-                (col("sls_sales").isNull()) | 
-                (col("sls_sales") <= 0) |
-                (col("sls_sales") != col("sls_quantity") * abs(col("sls_price"))),
-                col("sls_quantity") * abs(col("sls_price")))
-            .otherwise(col("sls_sales")
-            )
-        )
-        .withColumn("sls_price",
-            when(
-                (col("sls_price") <= 0) | (col("sls_price").isNull()),
-                col("sls_sales") / when(col("sls_quantity") != 0, col("sls_quantity")))
-            .otherwise(col("sls_price")
-            )
+                upper(trim(regexp_replace(col("gen"), "\r", ""))).isin("F", "FEMALE"),
+                "Female")
+            .when(
+                upper(trim(regexp_replace(col("gen"), "\r", ""))).isin("M", "MALE"),
+                "Male")       
+            .otherwise("n/a") 
         )
         .withColumn("cleaned_date", current_timestamp())
     )
