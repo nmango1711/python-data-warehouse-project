@@ -1,10 +1,11 @@
-from src.ingest.load_to_bronze import ingest_csv_to_bronze
-from src.transform.silver.run_silver import run_silver
-from src.transform.gold.run_gold import run_gold
+from src.ingest.load_to_bronze import load_to_bronze
+from src.transformations.silver.load_to_silver import load_to_silver
+from src.transformations.gold.load_to_gold import load_to_gold
+from src.config.spark_session import get_spark
 
-SOURCE_PATH = "data/source"
-BRONZE_PATH = "data/bronze"
+spark = get_spark()
+spark.sparkContext.setLogLevel("ERROR")
 
-#ingest_csv_to_bronze(SOURCE_PATH, BRONZE_PATH)
-#run_silver()
-run_gold()
+load_to_bronze("data/source", "data/bronze", spark)
+#load_to_silver(spark)
+#load_to_gold(spark)

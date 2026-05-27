@@ -1,18 +1,25 @@
-from src.config.spark_session import get_spark
-import os 
+import os, time
 
-def ingest_csv_to_bronze(input_path, output_path):
-    spark = get_spark()
+def load_to_bronze(source_path, bronze_path, spark):
 
-    for file in os.listdir(input_path):
+    for file in os.listdir(source_path):
+        start_time = time.time()
         if file.endswith(".csv"):
             df = spark.read \
                 .option("header", True) \
                 .option("inferSchema", True) \
                 .option("delimiter", ",") \
-                .csv(f"{input_path}/{file}")
+                .csv(f"{source_path}/{file}")
             
-        output_file = file.replace(".csv", "")
-        df.write.mode("overwrite").parquet(f"{output_path}/{output_file}") 
-        
+        bronze_file = file.replace(".csv", "")
+        df.write.mode("overwrite").parquet(f"{bronze_path}/{bronze_file}") 
+
+        load_time = time.time()
+        print()
+        print("****************")
+        print(f"Created bronze file: {bronze_file}")
+        print(f"Total Rows: {df.count()}")
+        print(f"Total Load Time: {(load_time-start_time):.2f} seconds")
+        print("****************")
+            
     spark.stop()
