@@ -1,8 +1,11 @@
 from src.transformations.gold.base_gold import read_silver_file, write_gold_file
 from pyspark.sql.functions import col, row_number
 from pyspark.sql.window import Window
+import time
 
 def create_gold_products(silver_path, gold_path, spark):
+
+    start_time = time.time()
 
     df_prd_info = read_silver_file("prd_info", silver_path, spark)
     df_px_cat_g1v2 = read_silver_file("PX_CAT_G1V2", silver_path, spark)
@@ -34,4 +37,5 @@ def create_gold_products(silver_path, gold_path, spark):
         col("prd_start_dt").alias("start_date"),
     )
 
-    write_gold_file(df_products, "dim_products", gold_path)
+    load_time = time.time() - start_time
+    write_gold_file(df_products, "dim_products", gold_path, load_time)

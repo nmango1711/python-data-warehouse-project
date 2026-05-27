@@ -1,8 +1,11 @@
 from src.transformations.gold.base_gold import read_silver_file, write_gold_file
 from pyspark.sql.functions import row_number, col, coalesce, lit, when
 from pyspark.sql.window import Window
+import time 
 
 def create_gold_customers(silver_path, gold_path, spark):
+    
+    start_time = time.time()
 
     df_cust_info = read_silver_file("cust_info", silver_path, spark)
     df_cust_az12 = read_silver_file("CUST_AZ12", silver_path, spark)
@@ -43,4 +46,5 @@ def create_gold_customers(silver_path, gold_path, spark):
         col("cst_create_date").alias("create_date"),
     )
 
-    write_gold_file(df_customers, "dim_customers", gold_path)
+    load_time = time.time() - start_time
+    write_gold_file(df_customers, "dim_customers", gold_path, load_time)

@@ -9,6 +9,9 @@ BRONZE_PATH = "data/bronze"
 SILVER_PATH = "data/silver"
 
 def load_to_silver(spark):
+    print("****************")
+    print("Silver Layer")
+    print("****************")
     transform_to_silver_cust_info(BRONZE_PATH, SILVER_PATH, spark)
     transform_to_silver_prd_info(BRONZE_PATH, SILVER_PATH, spark)
     transform_to_silver_sales_details(BRONZE_PATH, SILVER_PATH, spark)

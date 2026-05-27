@@ -1,6 +1,7 @@
 from src.transformations.silver.base_silver import read_bronze_file, write_silver_file
 from pyspark.sql.functions import *
 import time 
+
 def transform_to_silver_sales_details(bronze_path, silver_path, spark):
 
     start_time = time.time()
