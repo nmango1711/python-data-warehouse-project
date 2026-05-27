@@ -1,17 +1,21 @@
 import os, pyodbc
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 SERVER = os.getenv("SERVER")
 USERNAME = os.getenv("USERNAME")
 PASSWORD = os.getenv("PASSWORD")
 
 def get_connection():
-    return pyodbc.connect(
-        f"DRIVER={{SQL Server}};"
+    conn = pyodbc.connect(
+        "DRIVER={ODBC Driver 18 for SQL Server};"
         f"SERVER={SERVER};"
         f"UID={USERNAME};"
         f"PWD={PASSWORD};"
-        f"autocommit=True"
+        "Encrypt=no;"
+        "TrustServerCertificate=yes;"
+        "autocommit=True;"
     )
+    conn.autocommit = True
+    return conn

@@ -1,12 +1,9 @@
-import os
-from dotenv import load_dotenv
+from src.sql.create_database import create_db_if_not_exists
 from src.config.db_config import get_connection
 
-load_dotenv()
+create_db_if_not_exists()
 
-DATABASE = os.getenv("DATABASE")
-
-def create_db_if_not_exists():
+def create_view_if_not_exists(view_name):
     try:
         conn = get_connection()
         
@@ -23,9 +20,9 @@ def create_db_if_not_exists():
 
         cursor.close()
         conn.close()
-        print(f"Succesfully created database: {DATABASE}")
+        print(f"Succesfully created View: {view_name}")
         return True
     
     except Exception as e:
-        print("ERROR CREATING DATABASE:", e)
+        print("ERROR CREATING VIEW:", e)
         return False
