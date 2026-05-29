@@ -1,6 +1,7 @@
 from src.transformations.gold.base_gold import read_silver_file, write_gold_file
 from pyspark.sql.functions import col, row_number
 from pyspark.sql.window import Window
+from src.sql.create_view import create_view_if_not_exists
 import time
 
 def create_gold_products(silver_path, gold_path, spark):
@@ -39,3 +40,4 @@ def create_gold_products(silver_path, gold_path, spark):
 
     load_time = time.time() - start_time
     write_gold_file(df_products, "dim_products", gold_path, load_time)
+    create_view_if_not_exists("dim_products", df_products)

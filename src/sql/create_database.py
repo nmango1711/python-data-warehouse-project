@@ -23,7 +23,6 @@ def create_db_if_not_exists():
 
         cursor.close()
         conn.close()
-        print(f"Succesfully created database: {DATABASE}")
         return True
     
     except Exception as e:

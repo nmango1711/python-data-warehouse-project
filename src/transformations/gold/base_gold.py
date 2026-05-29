@@ -10,6 +10,3 @@ def write_gold_file(df, gold_file , gold_path, load_time):
     print(f"Created gold file: {gold_file}")
     print(f"Total Rows: {df.count()}")
     print(f"Total Load Time: {load_time:.2f} seconds")
-    print("----------------")
-    print()
-

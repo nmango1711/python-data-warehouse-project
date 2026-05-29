@@ -1,26 +1,36 @@
 from src.sql.create_database import create_db_if_not_exists
+from src.sql.create_table import create_table_if_not_exists
 from src.config.db_config import get_connection
 
-create_db_if_not_exists()
+def create_view_if_not_exists(view_name, df_customers):
 
-def create_view_if_not_exists(view_name):
+    table_name = f"stg_{view_name}"
+
+    create_db_if_not_exists()
+    create_table_if_not_exists(table_name, df_customers)
+
     try:
         conn = get_connection()
-        
         cursor = conn.cursor()
-        
-        cursor.execute(f"""
-        IF NOT EXISTS (
-            SELECT name FROM sys.databases WHERE name = '{DATABASE}'
-        )
-        BEGIN
-        CREATE DATABASE [{DATABASE}]
-        END;
-        """)
 
+        query = f"""
+        IF OBJECT_ID('{view_name}', 'V') IS NOT NULL
+            DROP VIEW {view_name};
+
+        EXEC('
+            CREATE VIEW {view_name} AS
+            SELECT *
+            FROM dbo.{table_name}
+        ');
+        """
+        cursor.execute(query)
+
+        conn.commit()
         cursor.close()
         conn.close()
-        print(f"Succesfully created View: {view_name}")
+        print(f"Successfully created view: {view_name}")
+        print("----------------")
+        print()
         return True
     
     except Exception as e:
