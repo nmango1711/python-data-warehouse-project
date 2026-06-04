@@ -8,7 +8,7 @@ DATABASE = os.getenv("DATABASE")
 
 def create_db_if_not_exists():
     try:
-        conn = get_connection()
+        conn = get_connection("master")
         
         cursor = conn.cursor()
         

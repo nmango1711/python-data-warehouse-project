@@ -1,6 +1,12 @@
 from src.sql.create_database import create_db_if_not_exists
 from src.sql.create_table import create_table_if_not_exists
 from src.config.db_config import get_connection
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+DATABASE = os.getenv("DATABASE")
 
 def create_view_if_not_exists(view_name, df_customers):
 
@@ -10,7 +16,7 @@ def create_view_if_not_exists(view_name, df_customers):
     create_table_if_not_exists(table_name, df_customers)
 
     try:
-        conn = get_connection()
+        conn = get_connection(DATABASE)
         cursor = conn.cursor()
 
         query = f"""
