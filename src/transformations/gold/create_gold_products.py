@@ -3,10 +3,13 @@ from pyspark.sql.functions import col, row_number
 from pyspark.sql.window import Window
 from src.sql.create_view import create_view_if_not_exists
 import time
+from src.config.logger import log_file_started
 
-def create_gold_products(silver_path, gold_path, spark):
+def create_gold_products(silver_path, gold_path, spark, logger):
 
-    start_time = time.time()
+    file_name = "dim_products"
+
+    start_time = log_file_started(logger, file_name, "G", ["prd_info", "PX_CAT_G1V2"])
 
     df_prd_info = read_silver_file("prd_info", silver_path, spark)
     df_px_cat_g1v2 = read_silver_file("PX_CAT_G1V2", silver_path, spark)
@@ -39,5 +42,5 @@ def create_gold_products(silver_path, gold_path, spark):
     )
 
     load_time = time.time() - start_time
-    write_gold_file(df_products, "dim_products", gold_path, load_time)
-    create_view_if_not_exists("dim_products", df_products)
+    write_gold_file(df_products, file_name, gold_path, load_time, logger)
+    create_view_if_not_exists(file_name, df_products, logger)

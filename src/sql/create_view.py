@@ -8,7 +8,7 @@ load_dotenv()
 
 DATABASE = os.getenv("DATABASE")
 
-def create_view_if_not_exists(view_name, df_customers):
+def create_view_if_not_exists(view_name, df_customers, logger):
 
     table_name = f"stg_{view_name}"
 
@@ -34,9 +34,8 @@ def create_view_if_not_exists(view_name, df_customers):
         conn.commit()
         cursor.close()
         conn.close()
-        print(f"Successfully created view: {view_name}")
-        print("----------------")
-        print()
+        logger.info(f"GOLD | Successfully created view: {view_name}")
+        logger.info(f"GOLD | ------------------")
         return True
     
     except Exception as e:

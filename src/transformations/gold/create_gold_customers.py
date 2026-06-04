@@ -2,11 +2,14 @@ from src.transformations.gold.base_gold import read_silver_file, write_gold_file
 from pyspark.sql.functions import row_number, col, coalesce, lit, when
 from pyspark.sql.window import Window
 from src.sql.create_view import create_view_if_not_exists
-import time 
+import time
+from src.config.logger import log_file_started
 
-def create_gold_customers(silver_path, gold_path, spark):
-    
-    start_time = time.time()
+def create_gold_customers(silver_path, gold_path, spark, logger):
+
+    file_name = "dim_customers"
+
+    start_time = log_file_started(logger, file_name, "G", ["cust_info", "CUST_AZ12", "LOC_A101"])
 
     df_cust_info = read_silver_file("cust_info", silver_path, spark)
     df_cust_az12 = read_silver_file("CUST_AZ12", silver_path, spark)
@@ -48,5 +51,5 @@ def create_gold_customers(silver_path, gold_path, spark):
     )
 
     load_time = time.time() - start_time
-    write_gold_file(df_customers, "dim_customers", gold_path, load_time)
-    create_view_if_not_exists("dim_customers", df_customers)
+    write_gold_file(df_customers, file_name, gold_path, load_time, logger)
+    create_view_if_not_exists(file_name, df_customers, logger)

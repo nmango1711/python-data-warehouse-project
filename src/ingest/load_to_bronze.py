@@ -1,14 +1,12 @@
 import os, time
+from src.config.logger import log_layer_start, log_file_started, log_file_finished, log_layer_end
 
-def load_to_bronze(source_path, bronze_path, spark):
+def load_to_bronze(source_path, bronze_path, spark, logger):
 
-    print()
-    print("****************")
-    print("Bronze Layer")
-    print("****************")
+    log_layer_start(logger, "BRONZE")
 
     for file in os.listdir(source_path):
-        start_time = time.time()
+        start_time = log_file_started(logger, file, "B")
         if file.endswith(".csv"):
             df = spark.read \
                 .option("header", True) \
@@ -20,9 +18,7 @@ def load_to_bronze(source_path, bronze_path, spark):
         df.write.mode("overwrite").parquet(f"{bronze_path}/{bronze_file}") 
 
         load_time = time.time()
-        print("----------------")
-        print(f"Created bronze file: {bronze_file}")
-        print(f"Total Rows: {df.count()}")
-        print(f"Total Load Time: {(load_time-start_time):.2f} seconds")
-        print("----------------")
-        print()
+        
+        log_file_finished(logger, df, bronze_file, load_time - start_time, "B")
+
+    log_layer_end(logger, "BRONZE")

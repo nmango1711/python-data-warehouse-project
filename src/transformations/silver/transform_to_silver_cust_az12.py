@@ -1,13 +1,16 @@
 from src.transformations.silver.base_silver import read_bronze_file, write_silver_file 
 from pyspark.sql.functions import col, substring, current_date, regexp_replace, lit, length, trim, upper, when, current_timestamp
 import time 
+from src.config.logger import log_file_started
 
-def transform_to_silver_cust_az12(bronze_path, silver_path, spark):
+def transform_to_silver_cust_az12(bronze_path, silver_path, spark, logger):
 
-    start_time = time.time()
+    file_name = "CUST_AZ12"
+
+    start_time = log_file_started(logger, file_name, "S")
 
     df = (
-        read_bronze_file("CUST_AZ12", bronze_path, spark)
+        read_bronze_file(file_name, bronze_path, spark)
 
         .withColumn("cid",
             when(
@@ -36,4 +39,4 @@ def transform_to_silver_cust_az12(bronze_path, silver_path, spark):
     )
 
     load_time = time.time() - start_time
-    write_silver_file(df, "CUST_AZ12", silver_path, load_time)
+    write_silver_file(df, file_name, silver_path, load_time, logger)

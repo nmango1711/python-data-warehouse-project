@@ -5,3 +5,4 @@ __pycache__/
 *.crc
 _SUCCESS
 .env
+logs/
